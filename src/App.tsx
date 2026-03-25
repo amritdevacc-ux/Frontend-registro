@@ -64,6 +64,7 @@ export default function App() {
   });
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'grades' | 'lessons' | 'absences'>('grades');
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('cvv_dark');
     if (saved) return saved === 'true';
@@ -220,9 +221,6 @@ export default function App() {
   });
 
   const handleLogout = () => {
-    if (!window.confirm("Sei sicuro di voler uscire dal tuo account?")) {
-      return;
-    }
     setUser(null);
     setGrades([]);
     setLessons([]);
@@ -234,6 +232,7 @@ export default function App() {
     Object.values(CACHE_KEYS).forEach((k) => localStorage.removeItem(k));
     setUsername('');
     setPassword('');
+    setShowLogoutConfirm(false);
   };
 
   const subjectAverages = useMemo(() => {
@@ -692,12 +691,51 @@ export default function App() {
           {activeTab === 'absences' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
         </button>
         <button 
-          onClick={handleLogout}
+          onClick={() => setShowLogoutConfirm(true)}
           className="relative p-2 text-gray-300 hover:text-red-400 transition-transform active:scale-95"
         >
           <LogOut size={26} strokeWidth={2} />
         </button>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/40 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="w-full max-w-sm bg-[var(--color-bg-card)] rounded-[2rem] p-6 shadow-2xl dark:border dark:border-gray-800"
+            >
+              <div className="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-[1.2rem] flex items-center justify-center mb-4 mx-auto">
+                <LogOut size={28} strokeWidth={2.5} />
+              </div>
+              <h3 className="text-[20px] font-extrabold text-center text-[var(--color-text-dark)] mb-2">
+                Vuoi uscire?
+              </h3>
+              <p className="text-[14px] text-center text-gray-500 dark:text-gray-400 font-bold mb-6 leading-relaxed">
+                Dovrai inserire nuovamente le tue credenziali per accedere ai tuoi dati.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="flex-1 py-3.5 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.2rem] hover:bg-gray-100 dark:hover:bg-gray-800 transition-transform active:scale-[0.98]"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-red-500/30"
+                >
+                  Esci
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <PWAInstallPrompt />
       <ReloadPrompt />
     </div>
