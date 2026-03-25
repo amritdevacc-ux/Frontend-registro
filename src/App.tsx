@@ -220,6 +220,9 @@ export default function App() {
   });
 
   const handleLogout = () => {
+    if (!window.confirm("Sei sicuro di voler uscire dal tuo account?")) {
+      return;
+    }
     setUser(null);
     setGrades([]);
     setLessons([]);
