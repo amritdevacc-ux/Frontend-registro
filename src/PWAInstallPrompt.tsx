@@ -9,6 +9,17 @@ export function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
+    // Check if dismissed
+    const dismissedUntil = localStorage.getItem('pwa-prompt-dismissed');
+    let isDismissed = false;
+    if (dismissedUntil) {
+      if (parseInt(dismissedUntil, 10) > new Date().getTime()) {
+        isDismissed = true;
+      } else {
+        localStorage.removeItem('pwa-prompt-dismissed');
+      }
+    }
+
     // Check if it's iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
@@ -20,7 +31,7 @@ export function PWAInstallPrompt() {
                              document.referrer.includes('android-app://');
     setIsStandalone(isStandaloneMode);
 
-    if (isStandaloneMode) {
+    if (isStandaloneMode || isDismissed) {
       return;
     }
 
@@ -35,7 +46,7 @@ export function PWAInstallPrompt() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // For iOS, show a prompt after a delay if not standalone
-    if (isIOSDevice && !isStandaloneMode) {
+    if (isIOSDevice) {
       setTimeout(() => setShowPrompt(true), 3000);
     }
 
@@ -62,16 +73,6 @@ export function PWAInstallPrompt() {
     const expiry = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
     localStorage.setItem('pwa-prompt-dismissed', expiry.toString());
   };
-
-  useEffect(() => {
-    const dismissedUntil = localStorage.getItem('pwa-prompt-dismissed');
-    if (dismissedUntil && parseInt(dismissedUntil, 10) > new Date().getTime()) {
-      setShowPrompt(false);
-    } else if (dismissedUntil) {
-      // Clean up expired item
-      localStorage.removeItem('pwa-prompt-dismissed');
-    }
-  }, []);
 
   if (!showPrompt || isStandalone) return null;
 
