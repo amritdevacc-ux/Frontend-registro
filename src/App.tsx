@@ -270,7 +270,7 @@ export default function App() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg-light)] font-nunito flex items-center justify-center p-6 selection:bg-blue-100">
+      <div className="min-h-screen bg-[var(--color-bg-light)] font-inter flex items-center justify-center p-6 selection:bg-blue-100">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -373,7 +373,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-light)] pb-28 relative font-nunito selection:bg-blue-100">
+    <div className="min-h-screen bg-[var(--color-bg-light)] pb-28 relative font-inter selection:bg-blue-100">
       {/* Pull-to-refresh indicator */}
       <div
         className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none"
