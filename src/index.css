@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary-blue: #3551E5;
+  --color-accent-blue: #E8EDFF;
+  --color-text-dark: #1F2937;
+  --color-text-gray: #9CA3AF;
+  --color-bg-light: #F4F7FB;
+  --color-bg-card: #FFFFFF;
+  --font-nunito: 'Nunito', sans-serif;
+}
+
+:root {
+  --color-primary-blue: #3551E5;
+  --color-accent-blue: #E8EDFF;
+  --color-text-dark: #1F2937;
+  --color-text-gray: #9CA3AF;
+  --color-bg-light: #F4F7FB;
+  --color-bg-card: #FFFFFF;
+}
+
+.dark {
+  --color-primary-blue: #5C78FF;
+  --color-accent-blue: #1E293B;
+  --color-text-dark: #F3F4F6;
+  --color-text-gray: #9CA3AF;
+  --color-bg-light: #0F172A;
+  --color-bg-card: #1E293B;
+}
+
+body {
+  font-family: var(--font-nunito);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-dark);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.soft-shadow {
+  box-shadow: 0 10px 40px -10px rgba(53, 81, 229, 0.1);
+}
+
+.dark .soft-shadow {
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+.card-shadow {
+  box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+}
+
+.dark .card-shadow {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
