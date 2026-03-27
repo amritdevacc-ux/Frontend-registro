@@ -15,12 +15,15 @@ import {
   Moon,
   Sun,
   Plus,
-  Trash2
+  Trash2,
+  Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Grade, LoginResponse, SubjectAverage, Lesson, Absence, Period } from './types';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { ReloadPrompt } from './ReloadPrompt';
+import { ChangelogModal } from './ChangelogModal';
+import { SettingsModal } from './SettingsModal';
 import { usePullToRefresh } from './usePullToRefresh';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
@@ -71,6 +74,7 @@ export default function App() {
   const [gradeModalValue, setGradeModalValue] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'grades' | 'lessons' | 'absences'>('grades');
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [rememberMe, setRememberMe] = useState(() => {
     return localStorage.getItem('cvv_credentials') !== null;
   });
@@ -480,13 +484,6 @@ export default function App() {
           <p className="text-sm font-semibold text-gray-400 mt-1 tracking-wide">Ecco il tuo {activeTab === 'lessons' ? 'orario settimanale' : activeTab === 'grades' ? 'riepilogo' : 'registro presenze'}</p>
         </div>
         <div className="text-right flex items-center justify-end gap-3">
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="w-10 h-10 rounded-full bg-[var(--color-bg-card)] text-gray-400 hover:text-[var(--color-text-dark)] flex items-center justify-center card-shadow transition-all"
-            aria-label="Attiva/Disattiva Tema Scuro"
-          >
-            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
           <p className="text-[13px] font-bold text-[#3551E5] whitespace-nowrap">{new Date().toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
         </div>
       </header>
@@ -801,10 +798,10 @@ export default function App() {
           {activeTab === 'absences' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
         </button>
         <button 
-          onClick={() => setShowLogoutConfirm(true)}
-          className="relative p-2 text-gray-300 hover:text-red-400 transition-transform active:scale-95"
+          onClick={() => setShowSettings(true)}
+          className="relative p-2 text-gray-300 hover:text-[var(--color-text-dark)] transition-transform active:scale-95"
         >
-          <LogOut size={26} strokeWidth={2} />
+          <Settings size={26} strokeWidth={2} />
         </button>
       </div>
 
@@ -917,6 +914,15 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      <SettingsModal 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+        darkMode={darkMode} 
+        setDarkMode={setDarkMode} 
+        onLogoutClick={() => setShowLogoutConfirm(true)} 
+      />
+
+      <ChangelogModal />
       <PWAInstallPrompt />
       <ReloadPrompt />
     </div>

@@ -21,10 +21,10 @@ export function ReloadPrompt() {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -50 }}
+        initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -50 }}
-        className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm bg-[var(--color-bg-card)] rounded-2xl p-4 shadow-xl border border-[var(--color-bg-light)] card-shadow"
+        exit={{ opacity: 0, y: 50 }}
+        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm bg-[var(--color-bg-card)] rounded-2xl p-4 shadow-xl border border-[var(--color-bg-light)] card-shadow"
       >
         <button 
           onClick={() => setNeedRefresh(false)}
