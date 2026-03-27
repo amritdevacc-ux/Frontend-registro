@@ -243,6 +243,7 @@ export default function App() {
     setPeriods(demoPeriods);
     setSelectedPeriod(2);
     setGrades(demoGrades);
+    setCustomGrades(loadCache<Grade[]>(CACHE_KEYS.customGrades) ?? []);
     localStorage.setItem('cvv_user', JSON.stringify(demoUser));
   };
 

@@ -1,4 +1,4 @@
-import { Sparkles, Moon, Calculator, UserCheck, Settings } from 'lucide-react';
+import { Sparkles, Moon, Calculator, UserCheck, Settings, BookOpen, Clock } from 'lucide-react';
 
 export interface Feature {
   id: string;
@@ -38,16 +38,37 @@ export const changelog: ChangelogVersion[] = [
       {
         id: 'grade-simulation',
         title: 'Simulatore Voti',
-        description: 'Aggiungi voti ipotetici con il tasto "+ Aggiungi voto manuale" per vedere come cambia la tua media in tempo reale.',
+        description: 'Aggiungi voti ipotetici con il tasto \"+ Aggiungi voto manuale\" per vedere come cambia la tua media. I voti restano salvati anche dopo il logout.',
         icon: Sparkles,
         color: 'bg-amber-500'
       },
       {
         id: 'auto-login',
         title: 'Accesso Automatico',
-        description: 'Basta inserire la password ogni volta! Spunta "Ricordami" per accedere automaticamente ai tuoi dati.',
+        description: 'Basta inserire la password ogni volta! Spunta \"Ricordami\" per accedere automaticamente ai tuoi dati.',
         icon: UserCheck,
         color: 'bg-blue-500'
+      },
+      {
+        id: 'agenda',
+        title: 'Agenda Integrata',
+        description: 'Consulta compiti, verifiche e annotazioni del registro con il nuovo tab Agenda e il selettore data animato.',
+        icon: BookOpen,
+        color: 'bg-purple-500'
+      },
+      {
+        id: 'lessons',
+        title: 'Lezioni di Oggi',
+        description: 'Un tab dedicato alle lezioni del giorno con materia, tipo e docente, sempre a portata di tap.',
+        icon: Clock,
+        color: 'bg-orange-500'
+      },
+      {
+        id: 'settings',
+        title: 'Pagina Impostazioni',
+        description: 'Accedi rapidamente al tema scuro, alle informazioni sull\'app e al logout dal nuovo menu Impostazioni.',
+        icon: Settings,
+        color: 'bg-gray-500'
       }
     ]
   }
