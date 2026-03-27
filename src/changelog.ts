@@ -19,7 +19,7 @@ export const changelog: ChangelogVersion[] = [
   {
     version: __APP_VERSION__,
     date: '2026-03-27',
-    title: 'Aggiornamento Primaverile',
+    title: 'Aggiornamento',
     features: [
       {
         id: 'dark-mode',
