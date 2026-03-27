@@ -90,7 +90,7 @@ export function SettingsModal({ isOpen, onClose, darkMode, setDarkMode, onLogout
                   App non ufficiale, non affiliata con Spaggiari Parma s.r.l.
                 </p>
                 <p className="text-[11px] font-bold text-gray-400">
-                  © 2025 All rights reserved.
+                  © 2026 All rights reserved.
                 </p>
               </div>
             </div>
