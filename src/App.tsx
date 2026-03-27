@@ -71,6 +71,9 @@ export default function App() {
   const [gradeModalValue, setGradeModalValue] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'grades' | 'lessons' | 'absences'>('grades');
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem('cvv_credentials') !== null;
+  });
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('cvv_dark');
     if (saved) return saved === 'true';
@@ -86,9 +89,6 @@ export default function App() {
     localStorage.setItem('cvv_dark', darkMode.toString());
   }, [darkMode]);
 
-  useEffect(() => {
-    saveCache(CACHE_KEYS.customGrades, customGrades);
-  }, [customGrades]);
 
   const loadDemoData = () => {
     const demoUser: LoginResponse = {
@@ -123,14 +123,76 @@ export default function App() {
     localStorage.setItem('cvv_user', JSON.stringify(demoUser));
   };
 
+  const handleLogout = () => {
+    setUser(null);
+    setGrades([]);
+    setCustomGrades([]);
+    setLessons([]);
+    setAbsences([]);
+    setPeriods([]);
+    setSelectedPeriod(null);
+    localStorage.removeItem('cvv_user');
+    localStorage.removeItem('cvv_credentials');
+    // Pulisce anche la cache dati al logout, ma preserva i voti manuali
+    Object.values(CACHE_KEYS).forEach((k) => {
+      if (k !== CACHE_KEYS.customGrades) {
+        localStorage.removeItem(k);
+      }
+    });
+    setUsername('');
+    setPassword('');
+    setShowLogoutConfirm(false);
+  };
+
   // Load user from local storage on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('cvv_user');
-    if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      fetchAllData(parsedUser.ident, parsedUser.token);
-    }
+    const checkAuth = async () => {
+      const savedUser = localStorage.getItem('cvv_user');
+      const savedCreds = localStorage.getItem('cvv_credentials');
+
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          if (parsedUser.expire) {
+            const expireDate = new Date(parsedUser.expire);
+            
+            if (new Date() >= expireDate) {
+              // Token scaduto
+              if (savedCreds) {
+                // Tentiamo auto-login
+                const creds = JSON.parse(atob(savedCreds));
+                const response = await fetch(`${API_BASE}/api/classeviva/login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(creds),
+                });
+                
+                if (!response.ok) throw new Error('Auto-login fallito');
+                
+                const data = await response.json();
+                setUser(data);
+                localStorage.setItem('cvv_user', JSON.stringify(data));
+                setCustomGrades(loadCache<Grade[]>(CACHE_KEYS.customGrades) ?? []);
+                await fetchAllData(data.ident, data.token);
+                return; // Auto-login riuscito, usciamo
+              } else {
+                // Token scaduto e niente credenziali, forza logout silente
+                throw new Error('Token scaduto senza credenziali');
+              }
+            }
+          }
+          
+          // Token valido o manca la scadenza
+          setUser(parsedUser);
+          fetchAllData(parsedUser.ident, parsedUser.token);
+        } catch (err) {
+          console.error("Errore validazione/autologin:", err);
+          handleLogout();
+        }
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -155,6 +217,12 @@ export default function App() {
 
       setUser(data);
       localStorage.setItem('cvv_user', JSON.stringify(data));
+      if (rememberMe) {
+        localStorage.setItem('cvv_credentials', btoa(JSON.stringify({ username, password, cid })));
+      } else {
+        localStorage.removeItem('cvv_credentials');
+      }
+      setCustomGrades(loadCache<Grade[]>(CACHE_KEYS.customGrades) ?? []);
       await fetchAllData(data.ident, data.token);
     } catch (err: any) {
       setError(err.message);
@@ -230,21 +298,6 @@ export default function App() {
     disabled: !user || loading,
   });
 
-  const handleLogout = () => {
-    setUser(null);
-    setGrades([]);
-    setCustomGrades([]);
-    setLessons([]);
-    setAbsences([]);
-    setPeriods([]);
-    setSelectedPeriod(null);
-    localStorage.removeItem('cvv_user');
-    // Pulisce anche la cache dati al logout
-    Object.values(CACHE_KEYS).forEach((k) => localStorage.removeItem(k));
-    setUsername('');
-    setPassword('');
-    setShowLogoutConfirm(false);
-  };
 
   const subjectAverages = useMemo(() => {
     const subjects: { [key: string]: Grade[] } = {};
@@ -349,6 +402,19 @@ export default function App() {
                   )}
                 </motion.div>
               )}
+
+              <div className="flex items-center mt-2 mb-2 ml-2">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 text-[var(--color-primary-blue)] bg-[var(--color-bg-light)] border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-accent-blue)]"
+                />
+                <label htmlFor="rememberMe" className="ml-2 text-[12px] font-bold text-gray-400 cursor-pointer select-none">
+                  Ricordami (salva credenziali per accessi futuri)
+                </label>
+              </div>
 
               <button
                 type="submit"
@@ -607,8 +673,11 @@ export default function App() {
                                 {grade.isCustom && (
                                   <button
                                     onClick={(e) => {
-                                      e.stopPropagation();
-                                      setCustomGrades(prev => prev.filter(g => g.customId !== grade.customId));
+                                      setCustomGrades(prev => {
+                                        const next = prev.filter(g => g.customId !== grade.customId);
+                                        saveCache(CACHE_KEYS.customGrades, next);
+                                        return next;
+                                      });
                                     }}
                                     className="flex items-center gap-1.5 p-2 px-3 text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-xl transition-colors shrink-0"
                                   >
@@ -831,7 +900,11 @@ export default function App() {
                       isCustom: true,
                       customId: Math.random().toString(36).substring(7)
                     };
-                    setCustomGrades(prev => [...prev, newGrade]);
+                    setCustomGrades(prev => {
+                      const next = [...prev, newGrade];
+                      saveCache(CACHE_KEYS.customGrades, next);
+                      return next;
+                    });
                     setGradeModalSubject(null);
                   }}
                   className="flex-1 py-3.5 bg-[var(--color-primary-blue)] hover:bg-blue-700 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-blue-500/30"
