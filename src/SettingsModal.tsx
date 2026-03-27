@@ -64,7 +64,7 @@ export function SettingsModal({ isOpen, onClose, darkMode, setDarkMode, onLogout
                   <Info size={20} className="text-gray-400" />
                   <span className="font-extrabold text-[15px]">Versione App</span>
                 </div>
-                <span className="text-[13px] font-bold text-gray-400">v0.0.1</span>
+                <span className="text-[13px] font-bold text-gray-400">v{__APP_VERSION__}</span>
               </div>
 
               {/* Logout Button */}

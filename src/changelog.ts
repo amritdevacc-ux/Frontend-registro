@@ -17,7 +17,7 @@ export interface ChangelogVersion {
 
 export const changelog: ChangelogVersion[] = [
   {
-    version: '1.1.0',
+    version: __APP_VERSION__,
     date: '2026-03-27',
     title: 'Aggiornamento Primaverile',
     features: [
