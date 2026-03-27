@@ -107,7 +107,7 @@ function AgendaCard({ evt }: { evt: AgendaEvent }) {
 
   return (
     <div className="relative mb-6 cursor-pointer group w-full" onClick={() => setIsExpanded(!isExpanded)}>
-      <div className={`bg-[var(--color-bg-card)] rounded-[2rem] p-6 relative z-10 border border-gray-100 dark:border-gray-800 transition-all duration-300 bg-white dark:bg-gray-800 ${isExpanded ? 'shadow-md -translate-y-1' : 'shadow-sm hover:shadow-md'}`}>
+      <div className={`bg-[var(--color-bg-card)] rounded-[2rem] p-6 relative z-10 border border-gray-100 dark:border-gray-800 transition-all duration-300 ${isExpanded ? 'shadow-md -translate-y-1' : 'shadow-sm hover:shadow-md'}`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center border border-gray-100 dark:border-gray-600">

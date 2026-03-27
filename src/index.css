@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary-blue: #3551E5;
   --color-accent-blue: #E8EDFF;
   --color-text-dark: #1F2937;
   --color-text-gray: #9CA3AF;
