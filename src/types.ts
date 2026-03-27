@@ -48,6 +48,20 @@ export interface LoginResponse {
   loginType?: string;
 }
 
+export interface AgendaEvent {
+  evtId: number;
+  evtCode: string;
+  evtDatetimeBegin: string;
+  evtDatetimeEnd: string;
+  isFullDay?: boolean;
+  notes: string;
+  authorName: string;
+  classDesc?: string;
+  subjectId?: number;
+  subjectDesc?: string;
+  homeworkId?: number | null;
+}
+
 export interface SubjectAverage {
   subject: string;
   average: number;

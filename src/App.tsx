@@ -19,7 +19,7 @@ import {
   Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Grade, LoginResponse, SubjectAverage, Lesson, Absence, Period } from './types';
+import { Grade, LoginResponse, SubjectAverage, Lesson, Absence, Period, AgendaEvent } from './types';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { ReloadPrompt } from './ReloadPrompt';
 import { ChangelogModal } from './ChangelogModal';
@@ -35,6 +35,7 @@ const CACHE_KEYS = {
   absences: 'cvv_cache_absences',
   periods:  'cvv_cache_periods',
   customGrades: 'cvv_custom_grades',
+  agenda: 'cvv_cache_agenda',
 } as const;
 
 const STOP_WORDS = ['e', 'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra', 'il', 'lo', 'la', 'i', 'gli', 'le'];
@@ -58,6 +59,93 @@ function saveCache(key: string, value: unknown) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }
 
+const getTheme = (evt: AgendaEvent) => {
+  const notesLower = evt.notes.toLowerCase();
+  
+  if (evt.evtCode === 'AGHW' || notesLower.includes('compit')) {
+    return {
+      bgUnder: 'bg-orange-200 dark:bg-orange-900/60',
+      textUnder: 'text-orange-700 dark:text-orange-300',
+      label: 'Compito',
+      tagBg: 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
+    };
+  }
+  if (notesLower.includes('verifica') || notesLower.includes('scritta') || notesLower.includes('interrogazion')) {
+    return {
+      bgUnder: 'bg-red-200 dark:bg-red-900/60',
+      textUnder: 'text-red-700 dark:text-red-300',
+      label: 'Valutazione',
+      tagBg: 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
+    };
+  }
+  if (notesLower.includes('colloqui')) {
+    return {
+      bgUnder: 'bg-indigo-200 dark:bg-indigo-900/60',
+      textUnder: 'text-indigo-700 dark:text-indigo-300',
+      label: 'Colloquio',
+      tagBg: 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800'
+    };
+  }
+  return {
+    bgUnder: 'bg-blue-200 dark:bg-blue-900/60',
+    textUnder: 'text-blue-700 dark:text-blue-300',
+    label: 'Annotazione',
+    tagBg: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
+  };
+};
+
+function AgendaCard({ evt }: { evt: AgendaEvent }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const theme = getTheme(evt);
+  
+  const start = new Date(evt.evtDatetimeBegin);
+  const end = new Date(evt.evtDatetimeEnd);
+  
+  const isFullDay = evt.isFullDay ?? (start.getHours() === 0 && start.getMinutes() === 0 && end.getHours() === 23 && end.getMinutes() === 59);
+  const timeString = isFullDay ? 'Tutto il giorno' : `${start.toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})} - ${end.toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}`;
+  const isMultiDay = start.getDate() !== end.getDate() && !isFullDay;
+
+  return (
+    <div className="relative mb-6 cursor-pointer group w-full" onClick={() => setIsExpanded(!isExpanded)}>
+      <div className={`bg-[var(--color-bg-card)] rounded-[2rem] p-6 relative z-10 border border-gray-100 dark:border-gray-800 transition-all duration-300 bg-white dark:bg-gray-800 ${isExpanded ? 'shadow-md -translate-y-1' : 'shadow-sm hover:shadow-md'}`}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center border border-gray-100 dark:border-gray-600">
+              <UserX size={18} className="text-gray-400 dark:text-gray-300" />
+            </div>
+            <div>
+              <p className="text-[13px] font-extrabold text-[var(--color-text-dark)] leading-tight">{evt.authorName ? evt.authorName.split(' ').map(n=>n.charAt(0).toUpperCase() + n.slice(1).toLowerCase()).join(' ') : 'Docente'}</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{evt.classDesc || 'Generale'}</p>
+            </div>
+          </div>
+        </div>
+
+        <h4 className="font-extrabold text-[18px] text-[var(--color-text-dark)] leading-tight mb-2">
+          {evt.subjectDesc || 'Comunicazione Generale'}
+        </h4>
+        
+        <p className={`text-[13px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-wrap break-words transition-all duration-300 mb-5 relative ${isExpanded ? '' : 'line-clamp-3'}`}>
+          {evt.notes}
+        </p>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`px-2.5 py-1 rounded-[0.5rem] border text-[10px] font-extrabold uppercase tracking-widest ${theme.tagBg}`}>
+            {theme.label}
+          </span>
+          <span className="px-2.5 py-1 rounded-[0.5rem] border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-extrabold uppercase tracking-widest bg-gray-50 dark:bg-gray-800">
+            {timeString}
+          </span>
+          {isMultiDay && (
+            <span className="px-2.5 py-1 rounded-[0.5rem] border border-blue-200 dark:border-blue-800 text-blue-500 dark:text-blue-400 text-[10px] font-extrabold uppercase tracking-widest bg-blue-50 dark:bg-blue-900/30">
+              Più giorni
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -71,6 +159,11 @@ export default function App() {
   const [customGrades, setCustomGrades] = useState<Grade[]>(() => loadCache<Grade[]>(CACHE_KEYS.customGrades) ?? []);
   const [lessons, setLessons] = useState<Lesson[]>(() => loadCache<Lesson[]>(CACHE_KEYS.lessons) ?? []);
   const [absences, setAbsences] = useState<Absence[]>(() => loadCache<Absence[]>(CACHE_KEYS.absences) ?? []);
+  const [agendaEvents, setAgendaEvents] = useState<AgendaEvent[]>(() => loadCache<AgendaEvent[]>(CACHE_KEYS.agenda) ?? []);
+  const [selectedAgendaDate, setSelectedAgendaDate] = useState<Date>(new Date());
+  const [agendaLoading, setAgendaLoading] = useState(false);
+  const agendaScrollRef = React.useRef<HTMLDivElement>(null);
+
   const [periods, setPeriods] = useState<Period[]>(() => loadCache<Period[]>(CACHE_KEYS.periods) ?? []);
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(() => {
     const cached = loadCache<Period[]>(CACHE_KEYS.periods);
@@ -82,7 +175,7 @@ export default function App() {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [gradeModalSubject, setGradeModalSubject] = useState<string | null>(null);
   const [gradeModalValue, setGradeModalValue] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'grades' | 'lessons' | 'absences'>('grades');
+  const [activeTab, setActiveTab] = useState<'grades' | 'agenda' | 'lessons' | 'absences'>('grades');
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [rememberMe, setRememberMe] = useState(() => {
@@ -93,6 +186,18 @@ export default function App() {
     if (saved) return saved === 'true';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
+  useEffect(() => {
+    if (activeTab === 'agenda') {
+      setTimeout(() => {
+        if (agendaScrollRef.current) {
+          const selectedBtn = agendaScrollRef.current.querySelector('[data-selected="true"]');
+          if (selectedBtn) {
+            selectedBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }
+      }, 100);
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     if (darkMode) {
@@ -147,6 +252,7 @@ export default function App() {
     setCustomGrades([]);
     setLessons([]);
     setAbsences([]);
+    setAgendaEvents([]);
     setPeriods([]);
     setSelectedPeriod(null);
     localStorage.removeItem('cvv_user');
@@ -304,6 +410,40 @@ export default function App() {
       setLoading(false);
     }
   };
+
+  const fetchAgenda = async (date: Date) => {
+    if (!user) return;
+    setAgendaLoading(true);
+    try {
+      const start = new Date(date);
+      start.setDate(start.getDate() - 7);
+      const end = new Date(date);
+      end.setDate(end.getDate() + 7);
+
+      const fStart = `${start.getFullYear()}${(start.getMonth()+1).toString().padStart(2,'0')}${start.getDate().toString().padStart(2,'0')}`;
+      const fEnd = `${end.getFullYear()}${(end.getMonth()+1).toString().padStart(2,'0')}${end.getDate().toString().padStart(2,'0')}`;
+
+      const res = await fetch(`${API_BASE}/api/classeviva/proxy/${user.ident.replace(/[^0-9]/g, '')}/agenda/all/${fStart}/${fEnd}`, {
+        headers: { 'Z-Auth-Token': user.token }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const evts = data.agenda || [];
+        setAgendaEvents(evts);
+        saveCache(CACHE_KEYS.agenda, evts);
+      }
+    } catch(e) {
+      console.error(e);
+    } finally {
+      setAgendaLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'agenda') {
+      fetchAgenda(selectedAgendaDate);
+    }
+  }, [activeTab, selectedAgendaDate]);
 
   // Memoizzato per usePullToRefresh
   const handleRefresh = useCallback(async () => {
@@ -495,7 +635,7 @@ export default function App() {
       <header className="px-8 pt-16 pb-6 flex items-start justify-between">
         <div>
           <h2 className="text-[32px] font-extrabold text-[var(--color-text-dark)] leading-tight tracking-tight">Ciao {user.firstName},</h2>
-          <p className="text-sm font-semibold text-gray-400 mt-1 tracking-wide">Ecco il tuo {activeTab === 'lessons' ? 'orario settimanale' : activeTab === 'grades' ? 'riepilogo' : 'registro presenze'}</p>
+          <p className="text-sm font-semibold text-gray-400 mt-1 tracking-wide">Ecco il tuo {activeTab === 'lessons' ? 'orario settimanale' : activeTab === 'grades' ? 'riepilogo' : activeTab === 'agenda' ? 'registro agenda' : 'registro presenze'}</p>
         </div>
         <div className="text-right flex items-center justify-end gap-3">
           <p className="text-[13px] font-bold text-[#3551E5] whitespace-nowrap">{new Date().toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
@@ -504,45 +644,101 @@ export default function App() {
 
       <main className="max-w-2xl mx-auto p-4 space-y-6">
         {/* Summary Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center"
-          >
-            <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
-              <Calculator size={18} strokeWidth={2.5} />
-            </div>
-            <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{totalAverage.toFixed(2)}</span>
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Media</span>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center"
-          >
-            <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
-              <Clock size={18} strokeWidth={2.5} />
-            </div>
-            <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{lessons.length}</span>
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Lezioni</span>
-          </motion.div>
+        <AnimatePresence mode="wait">
+          {activeTab === 'grades' && (
+            <motion.div 
+              key="grades-stats"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="grid grid-cols-3 gap-3 mb-8"
+            >
+              <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
+                <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
+                  <Calculator size={18} strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{totalAverage.toFixed(2)}</span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Media</span>
+              </div>
+              <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
+                <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
+                  <Clock size={18} strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{lessons.length}</span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Lezioni</span>
+              </div>
+              <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
+                <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
+                  <UserX size={18} strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{absences.length}</span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Assenze</span>
+              </div>
+            </motion.div>
+          )}
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center"
-          >
-            <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
-              <UserX size={18} strokeWidth={2.5} />
-            </div>
-            <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{absences.length}</span>
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Assenze/Ritardi</span>
-          </motion.div>
-        </div>
+          {activeTab === 'agenda' && (
+            <motion.div 
+              key="agenda-stats"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="grid grid-cols-1 mb-8"
+            >
+              <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
+                <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
+                  <BookOpen size={18} strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">
+                  {agendaEvents.filter(e => {
+                    const compareDate = new Date(selectedAgendaDate);
+                    compareDate.setHours(0,0,0,0);
+                    const s = new Date(e.evtDatetimeBegin); s.setHours(0,0,0,0);
+                    const en = new Date(e.evtDatetimeEnd); en.setHours(0,0,0,0);
+                    return compareDate >= s && compareDate <= en;
+                  }).length}
+                </span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Eventi in questa data</span>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'lessons' && (
+            <motion.div 
+              key="lessons-stats"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="grid grid-cols-1 mb-8"
+            >
+              <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
+                <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
+                  <Clock size={18} strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{lessons.length}</span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Lezioni di oggi</span>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'absences' && (
+            <motion.div 
+              key="absences-stats"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="grid grid-cols-1 mb-8"
+            >
+              <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
+                <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
+                  <UserX size={18} strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{absences.length}</span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Assenze totali</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {activeTab === 'grades' && (
           <div className="space-y-6">
@@ -717,6 +913,96 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === 'agenda' && (
+          <div className="space-y-4">
+            <h3 className="text-[11px] font-extrabold text-gray-400 uppercase tracking-[0.2em] ml-2">Agenda</h3>
+            <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-[12px] font-extrabold text-gray-400 uppercase tracking-widest">{selectedAgendaDate.getFullYear()}</span>
+                <span className="text-[18px] font-extrabold text-[var(--color-primary-blue)] tracking-tight capitalize">
+                  {selectedAgendaDate.toLocaleString('it-IT', { month: 'long' })}
+                </span>
+              </div>
+              <div 
+                ref={agendaScrollRef} 
+                className="flex items-center gap-2 overflow-x-auto overflow-y-hidden pt-2 pb-4 snap-x smooth-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                style={{ paddingLeft: 'calc(50% - 24px)', paddingRight: 'calc(50% - 24px)' }}
+              >
+                {Array.from({length: 120}).map((_, i) => {
+                   const d = new Date();
+                   d.setDate(d.getDate() - 30 + i);
+                   const isSelected = d.toDateString() === selectedAgendaDate.toDateString();
+                   return (
+                     <button
+                       key={i}
+                       data-selected={isSelected}
+                       onClick={(e) => {
+                         setSelectedAgendaDate(d);
+                         e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                       }}
+                       className={`relative flex-shrink-0 w-12 h-16 rounded-2xl flex flex-col items-center justify-center transition-all snap-center ${
+                         isSelected ? 'text-[var(--color-primary-blue)] scale-105' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:scale-105'
+                       }`}
+                     >
+                       {isSelected && (
+                         <motion.div 
+                           layoutId="agenda-date-bubble"
+                           className="absolute inset-0 bg-blue-50 dark:bg-blue-900/40 rounded-2xl border border-blue-100 dark:border-blue-800 soft-shadow"
+                           transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                           style={{ zIndex: 0 }}
+                         />
+                       )}
+                       <span className="relative z-10 text-[10px] font-bold uppercase mb-0.5">{d.toLocaleDateString('it-IT', { weekday: 'short' }).replace(/\./g, '')}</span>
+                       <span className={`relative z-10 text-[18px] font-extrabold`}>{d.getDate()}</span>
+                     </button>
+                   );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {agendaLoading && agendaEvents.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                  <Loader2 className="animate-spin mb-2" size={32} />
+                  <p className="font-bold text-sm">Caricamento agenda...</p>
+                </div>
+              ) : agendaEvents.filter(e => {
+                const edStart = new Date(e.evtDatetimeBegin);
+                const edEnd = new Date(e.evtDatetimeEnd);
+                const compareDate = new Date(selectedAgendaDate);
+                compareDate.setHours(0,0,0,0);
+                const s = new Date(edStart); s.setHours(0,0,0,0);
+                const en = new Date(edEnd); en.setHours(0,0,0,0);
+                return compareDate >= s && compareDate <= en;
+              }).length === 0 ? (
+                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-gray-400 font-bold">
+                  Nessun evento in agenda per questa data.
+                </div>
+              ) : agendaEvents
+                  .filter(e => {
+                    const edStart = new Date(e.evtDatetimeBegin);
+                    const edEnd = new Date(e.evtDatetimeEnd);
+                    const compareDate = new Date(selectedAgendaDate);
+                    compareDate.setHours(0,0,0,0);
+                    const s = new Date(edStart); s.setHours(0,0,0,0);
+                    const en = new Date(edEnd); en.setHours(0,0,0,0);
+                    return compareDate >= s && compareDate <= en;
+                  })
+                  .map((evt, idx) => (
+                    <motion.div
+                      key={evt.evtId}
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.05 }}
+                    >
+                      <AgendaCard evt={evt} />
+                    </motion.div>
+                  ))
+              }
+            </div>
+          </div>
+        )}
+
         {activeTab === 'lessons' && (
           <div className="space-y-4">
             <h3 className="text-[11px] font-extrabold text-gray-400 uppercase tracking-[0.2em] ml-2">Lezioni di Oggi ({lessons.length})</h3>
@@ -798,6 +1084,13 @@ export default function App() {
         >
           <TrendingUp size={26} className={activeTab === 'grades' ? 'text-[var(--color-primary-blue)]' : 'text-gray-300'} strokeWidth={activeTab === 'grades' ? 2.5 : 2} />
           {activeTab === 'grades' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
+        </button>
+        <button 
+          onClick={() => setActiveTab('agenda')}
+          className="relative p-2 transition-transform active:scale-95"
+        >
+          <BookOpen size={26} className={activeTab === 'agenda' ? 'text-[var(--color-primary-blue)]' : 'text-gray-300'} strokeWidth={activeTab === 'agenda' ? 2.5 : 2} />
+          {activeTab === 'agenda' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
         </button>
         <button 
           onClick={() => setActiveTab('lessons')}
