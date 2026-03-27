@@ -37,6 +37,16 @@ const CACHE_KEYS = {
   customGrades: 'cvv_custom_grades',
 } as const;
 
+const STOP_WORDS = ['e', 'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra', 'il', 'lo', 'la', 'i', 'gli', 'le'];
+const getSubjectDisplayName = (name: string) => {
+  if (name.length <= 40) return name;
+  const acronym = name.split(/\s+/)
+    .filter(w => !STOP_WORDS.includes(w.toLowerCase()) || w.length > 2)
+    .map(w => w[0]?.toUpperCase())
+    .join('');
+  return acronym || name;
+};
+
 function loadCache<T>(key: string): T | null {
   try {
     const raw = localStorage.getItem(key);
@@ -116,8 +126,12 @@ export default function App() {
       { subjectId: 2, subjectDesc: "Italiano", displayValue: "9", decimalValue: 9, evtDate: "2024-03-20T08:30:00Z", notesForFamily: "Eccellente", color: "green", componentDesc: "Orale", periodPos: 2, periodDesc: "2° Quadrimestre" },
       { subjectId: 3, subjectDesc: "Inglese", displayValue: "6", decimalValue: 6, evtDate: "2024-03-12T12:00:00Z", notesForFamily: "", color: "green", componentDesc: "Scritto", periodPos: 2, periodDesc: "2° Quadrimestre" },
       { subjectId: 4, subjectDesc: "Storia", displayValue: "7½", decimalValue: 7.5, evtDate: "2024-03-18T09:45:00Z", notesForFamily: "", color: "green", componentDesc: "Orale", periodPos: 2, periodDesc: "2° Quadrimestre" },
+      { subjectId: 6, subjectDesc: "SCIENZE MOTORIE E SPORTIVE", displayValue: "7.75", decimalValue: 7.75, evtDate: "2024-03-24T10:00:00Z", notesForFamily: "", color: "green", componentDesc: "Pratico", periodPos: 2, periodDesc: "2° Quadrimestre" },
       { subjectId: 1, subjectDesc: "Matematica", displayValue: "6", decimalValue: 6, evtDate: "2023-11-10T09:00:00Z", notesForFamily: "", color: "green", componentDesc: "Scritto", periodPos: 1, periodDesc: "1° Quadrimestre" },
       { subjectId: 2, subjectDesc: "Italiano", displayValue: "8", decimalValue: 8, evtDate: "2023-12-05T11:00:00Z", notesForFamily: "", color: "green", componentDesc: "Scritto", periodPos: 1, periodDesc: "1° Quadrimestre" },
+      { subjectId: 5, subjectDesc: "TECNOLOGIE E PROGETTAZIONE DI SISTEMI INFORMATICI E DI TELECOMUNICAZIONI", displayValue: "9", decimalValue: 9, evtDate: "2024-03-25T11:00:00Z", notesForFamily: "", color: "green", componentDesc: "Scritto", periodPos: 2, periodDesc: "2° Quadrimestre" },
+      { subjectId: 5, subjectDesc: "TECNOLOGIE E PROGETTAZIONE DI SISTEMI INFORMATICI E DI TELECOMUNICAZIONI", displayValue: "10", decimalValue: 10, evtDate: "2024-03-24T11:00:00Z", notesForFamily: "", color: "green", componentDesc: "Orale", periodPos: 2, periodDesc: "2° Quadrimestre" },
+      { subjectId: 5, subjectDesc: "TECNOLOGIE E PROGETTAZIONE DI SISTEMI INFORMATICI E DI TELECOMUNICAZIONI", displayValue: "9.25", decimalValue: 9.25, evtDate: "2024-03-23T11:00:00Z", notesForFamily: "", color: "green", componentDesc: "Pratico", periodPos: 2, periodDesc: "2° Quadrimestre" },
     ];
 
     setUser(demoUser);
@@ -600,15 +614,17 @@ export default function App() {
                   onClick={() => setSelectedSubject(selectedSubject === subject.subject ? null : subject.subject)}
                   className="bg-[var(--color-bg-card)] rounded-[2rem] card-shadow overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5"
                 >
-                  <div className="p-5 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-3 h-12 rounded-full ${subject.average >= 6 ? 'bg-[var(--color-primary-blue)]' : 'bg-red-400'}`} />
-                      <div>
-                        <h4 className="font-extrabold text-[16px] text-[var(--color-text-dark)] leading-tight mb-1">{subject.subject}</h4>
+                  <div className="p-5 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <div className={`w-3 h-12 rounded-full shrink-0 ${subject.average >= 6 ? 'bg-[var(--color-primary-blue)]' : 'bg-red-400'}`} />
+                      <div className="min-w-0">
+                        <h4 className={`font-extrabold text-[16px] text-[var(--color-text-dark)] leading-tight mb-1 ${selectedSubject === subject.subject ? '' : 'line-clamp-3'}`} title={subject.subject}>
+                          {selectedSubject === subject.subject ? subject.subject : getSubjectDisplayName(subject.subject)}
+                        </h4>
                         <p className="text-[12px] font-bold text-gray-400">{subject.grades.length} voti registrati</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 shrink-0">
                       <div className="text-right">
                         <span className={`text-[22px] font-extrabold block ${subject.average >= 6 ? 'text-[var(--color-text-dark)]' : 'text-red-500 dark:text-red-400'}`}>
                           {subject.average > 0 ? subject.average.toFixed(2) : '-'}
