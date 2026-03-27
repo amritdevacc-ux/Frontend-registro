@@ -13,7 +13,9 @@ import {
   Clock,
   UserX,
   Moon,
-  Sun
+  Sun,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Grade, LoginResponse, SubjectAverage, Lesson, Absence, Period } from './types';
@@ -29,6 +31,7 @@ const CACHE_KEYS = {
   lessons: 'cvv_cache_lessons',
   absences: 'cvv_cache_absences',
   periods:  'cvv_cache_periods',
+  customGrades: 'cvv_custom_grades',
 } as const;
 
 function loadCache<T>(key: string): T | null {
@@ -52,6 +55,7 @@ export default function App() {
   const [user, setUser] = useState<LoginResponse | null>(null);
   // Inizializza con i dati in cache per mostrarli subito (stale-while-revalidate)
   const [grades, setGrades] = useState<Grade[]>(() => loadCache<Grade[]>(CACHE_KEYS.grades) ?? []);
+  const [customGrades, setCustomGrades] = useState<Grade[]>(() => loadCache<Grade[]>(CACHE_KEYS.customGrades) ?? []);
   const [lessons, setLessons] = useState<Lesson[]>(() => loadCache<Lesson[]>(CACHE_KEYS.lessons) ?? []);
   const [absences, setAbsences] = useState<Absence[]>(() => loadCache<Absence[]>(CACHE_KEYS.absences) ?? []);
   const [periods, setPeriods] = useState<Period[]>(() => loadCache<Period[]>(CACHE_KEYS.periods) ?? []);
@@ -63,6 +67,8 @@ export default function App() {
     return current ? current.periodPos : cached[cached.length - 1].periodPos;
   });
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [gradeModalSubject, setGradeModalSubject] = useState<string | null>(null);
+  const [gradeModalValue, setGradeModalValue] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'grades' | 'lessons' | 'absences'>('grades');
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
@@ -79,6 +85,10 @@ export default function App() {
     }
     localStorage.setItem('cvv_dark', darkMode.toString());
   }, [darkMode]);
+
+  useEffect(() => {
+    saveCache(CACHE_KEYS.customGrades, customGrades);
+  }, [customGrades]);
 
   const loadDemoData = () => {
     const demoUser: LoginResponse = {
@@ -223,6 +233,7 @@ export default function App() {
   const handleLogout = () => {
     setUser(null);
     setGrades([]);
+    setCustomGrades([]);
     setLessons([]);
     setAbsences([]);
     setPeriods([]);
@@ -238,9 +249,10 @@ export default function App() {
   const subjectAverages = useMemo(() => {
     const subjects: { [key: string]: Grade[] } = {};
     
+    const allGrades = [...grades, ...customGrades];
     const filteredGrades = selectedPeriod 
-      ? grades.filter(g => g.periodPos === selectedPeriod)
-      : grades;
+      ? allGrades.filter(g => g.periodPos === selectedPeriod)
+      : allGrades;
 
     filteredGrades.forEach(grade => {
       if (!subjects[grade.subjectDesc]) {
@@ -260,7 +272,7 @@ export default function App() {
         grades: grades.sort((a, b) => new Date(b.evtDate).getTime() - new Date(a.evtDate).getTime())
       };
     }).sort((a, b) => a.subject.localeCompare(b.subject));
-  }, [grades, selectedPeriod]);
+  }, [grades, customGrades, selectedPeriod]);
 
   const totalAverage = useMemo(() => {
     const averages = subjectAverages.filter(s => s.average > 0).map(s => s.average);
@@ -541,7 +553,14 @@ export default function App() {
                         {subject.average > 0 && subject.average < 6 && (
                           <div className="text-[12px] font-extrabold text-red-400 mt-1.5 max-w-[130px] leading-tight">
                             {requiredFor6 <= 10 
-                              ? `Serve ~${requiredFor6.toFixed(1).replace('.0', '')} per il 6` 
+                              ? `Serve ~${Math.max(1, requiredFor6).toFixed(1).replace('.0', '')} per il 6` 
+                              : 'Più voti necessari per il 6'}
+                          </div>
+                        )}
+                        {subject.average >= 6 && (
+                          <div className="text-[12px] font-extrabold text-[#1abc9c] mt-1.5 max-w-[130px] leading-tight">
+                            {requiredFor6 <= 10
+                              ? `Non prendere meno di ${Math.max(1, requiredFor6).toFixed(1).replace('.0', '')}`
                               : 'Più voti necessari per il 6'}
                           </div>
                         )}
@@ -558,8 +577,18 @@ export default function App() {
                         className="bg-[var(--color-bg-light)] overflow-hidden"
                       >
                         <div className="p-5 space-y-3">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setGradeModalSubject(subject.subject);
+                              setGradeModalValue('');
+                            }}
+                            className="w-full py-3 bg-[var(--color-bg-card)] text-[var(--color-primary-blue)] font-extrabold text-[13px] rounded-[1.5rem] card-shadow flex items-center justify-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border border-blue-100 dark:border-blue-800"
+                          >
+                            <Plus size={16} strokeWidth={3} /> Aggiungi voto manuale
+                          </button>
                           {subject.grades.map((grade, gIdx) => (
-                            <div key={gIdx} className="flex flex-col gap-3 bg-[var(--color-bg-card)] p-4 rounded-[1.5rem] card-shadow">
+                            <div key={gIdx} className={`flex flex-col gap-3 p-4 rounded-[1.5rem] card-shadow relative ${grade.isCustom ? 'bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800' : 'bg-[var(--color-bg-card)]'}`}>
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                   <div className={`w-12 h-12 rounded-[1rem] flex items-center justify-center font-extrabold text-[18px] ${
@@ -575,6 +604,18 @@ export default function App() {
                                     </div>
                                   </div>
                                 </div>
+                                {grade.isCustom && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setCustomGrades(prev => prev.filter(g => g.customId !== grade.customId));
+                                    }}
+                                    className="flex items-center gap-1.5 p-2 px-3 text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-xl transition-colors shrink-0"
+                                  >
+                                    <Trash2 size={16} />
+                                    <span className="text-[11px] font-extrabold uppercase tracking-wider hidden sm:inline">Elimina</span>
+                                  </button>
+                                )}
                               </div>
                               {grade.notesForFamily && (
                                 <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-[1rem] text-[12px] font-semibold text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -729,6 +770,73 @@ export default function App() {
                   className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-red-500/30"
                 >
                   Esci
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Add Grade Modal */}
+      <AnimatePresence>
+        {gradeModalSubject && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/40 backdrop-blur-sm"
+               onClick={() => setGradeModalSubject(null)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-[var(--color-bg-card)] rounded-[2rem] p-6 shadow-2xl dark:border dark:border-gray-800"
+            >
+              <h3 className="text-[18px] font-extrabold text-center text-[var(--color-text-dark)] mb-6">
+                Aggiungi voto a {gradeModalSubject}
+              </h3>
+              <input
+                type="number"
+                step="0.25"
+                value={gradeModalValue}
+                onChange={(e) => setGradeModalValue(e.target.value.replace(',', '.'))}
+                className="w-full px-5 py-4 mb-6 bg-[var(--color-bg-light)] text-[24px] text-center font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-gray-400"
+                placeholder="es. 7.5"
+                autoFocus
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setGradeModalSubject(null)}
+                  className="flex-1 py-3.5 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.2rem] hover:bg-gray-100 dark:hover:bg-gray-800 transition-transform active:scale-[0.98]"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={() => {
+                    const val = parseFloat(gradeModalValue);
+                    if (isNaN(val) || val <= 0 || val > 10) {
+                      alert("Inserisci un voto valido (es. compreso tra 1 e 10)");
+                      return;
+                    }
+                    const period = periods.find(p => p.periodPos === selectedPeriod);
+                    const subjectData = subjectAverages.find(s => s.subject === gradeModalSubject);
+                    const newGrade: Grade = {
+                      subjectId: subjectData?.grades[0]?.subjectId || 0,
+                      subjectDesc: gradeModalSubject,
+                      displayValue: val.toString(),
+                      decimalValue: val,
+                      evtDate: new Date().toISOString(),
+                      notesForFamily: "Voto aggiunto manualmente",
+                      color: val >= 6 ? "green" : "red",
+                      componentDesc: "Voto manuale",
+                      periodPos: selectedPeriod || 1,
+                      periodDesc: period?.periodDesc || "Manuale",
+                      isCustom: true,
+                      customId: Math.random().toString(36).substring(7)
+                    };
+                    setCustomGrades(prev => [...prev, newGrade]);
+                    setGradeModalSubject(null);
+                  }}
+                  className="flex-1 py-3.5 bg-[var(--color-primary-blue)] hover:bg-blue-700 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-blue-500/30"
+                >
+                  Aggiungi
                 </button>
               </div>
             </motion.div>

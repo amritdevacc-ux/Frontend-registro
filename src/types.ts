@@ -9,6 +9,8 @@ export interface Grade {
   componentDesc: string;
   periodPos: number;
   periodDesc: string;
+  isCustom?: boolean;
+  customId?: string;
 }
 
 export interface Lesson {
