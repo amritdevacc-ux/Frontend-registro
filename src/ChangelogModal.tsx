@@ -105,7 +105,7 @@ export function ChangelogModal() {
                 onClick={handleClose}
                 className="w-full py-4 bg-[var(--color-primary-blue)] hover:bg-blue-700 text-white font-extrabold text-[16px] rounded-[1.5rem] soft-shadow transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
               >
-                Inizia a scoprire
+                Accedi all'app
                 <ArrowRight size={20} strokeWidth={2.5} />
               </button>
             </div>
