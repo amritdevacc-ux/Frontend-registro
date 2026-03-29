@@ -57,7 +57,7 @@ export function ChangelogModal() {
               
               <button
                 onClick={handleClose}
-                className="absolute top-6 right-6 p-2 bg-[var(--color-bg-light)] text-gray-400 hover:text-[var(--color-text-dark)] rounded-full transition-colors z-10"
+                className="absolute top-6 right-6 p-2 bg-[var(--color-bg-light)] text-[var(--color-text-gray)] hover:text-[var(--color-text-dark)] rounded-full transition-colors z-10"
               >
                 <X size={20} strokeWidth={2.5} />
               </button>
@@ -66,9 +66,9 @@ export function ChangelogModal() {
                 <Star size={28} strokeWidth={2.5} className="fill-[var(--color-primary-blue)]/20" />
               </div>
               <h2 className="text-[26px] font-extrabold text-[var(--color-text-dark)] leading-tight mb-2 tracking-tight">Novità di Klass</h2>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--color-bg-light)] rounded-full text-[12px] font-extrabold text-gray-500 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--color-bg-light)] rounded-full text-[12px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-widest">
                 <span>Versione {currentVersionData.version}</span>
-                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                <span className="w-1 h-1 rounded-full bg-[var(--color-text-gray)]/30"></span>
                 <span>{currentVersionData.title}</span>
               </div>
             </div>
@@ -90,7 +90,7 @@ export function ChangelogModal() {
                     </div>
                     <div>
                       <h3 className="text-[16px] font-extrabold text-[var(--color-text-dark)] mb-1 leading-tight">{feature.title}</h3>
-                      <p className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 leading-relaxed">
+                      <p className="text-[13px] font-semibold text-[var(--color-text-gray)] leading-relaxed">
                         {feature.description}
                       </p>
                     </div>
@@ -103,7 +103,7 @@ export function ChangelogModal() {
             <div className="p-6 pt-4 bg-[var(--color-bg-card)] border-t border-[var(--color-bg-light)] shrink-0">
               <button
                 onClick={handleClose}
-                className="w-full py-4 bg-[var(--color-primary-blue)] hover:bg-blue-700 text-white font-extrabold text-[16px] rounded-[1.5rem] soft-shadow transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[var(--color-primary-blue)] hover:bg-[var(--color-primary-blue)]/90 text-white font-extrabold text-[16px] rounded-[1.5rem] soft-shadow transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 Accedi all'app
                 <ArrowRight size={20} strokeWidth={2.5} />

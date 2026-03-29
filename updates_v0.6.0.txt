@@ -1,0 +1,36 @@
+RIASSUNTO AGGIORNAMENTI - KLASS v0.6.0
+Data: 29 Marzo 2026
+
+1. MOTORE DEI TEMI E PERSONALIZZAZIONE
+- Implementazione di un sistema di tematizzazione dinamica con 10 palette predefinite:
+  * Light & Dark (Standard)
+  * Midnight (Deep Purple/Pink)
+  * Dreamland (Pastel Blue/Pink)
+  * Lemonade (Yellow/Pink/Purple)
+  * Cozy (Earth tones/Sage)
+  * Violet (Vivid Purple/Cyan)
+  * Mono (High-contrast Grayscale)
+  * Sunset (Deep Red/Gold)
+  * Elegance (Black/Gold/Navy)
+- Sostituzione del toggle "Dark Mode" con un selettore visivo a griglia nelle Impostazioni.
+- Persistenza della scelta del tema tramite localStorage (chiave: cvv_theme).
+
+2. ARCHITETTURA CSS E VARIABILI
+- Transizione completa dell'intera interfaccia da colori Tailwind hardcoded a variabili CSS dinamiche (--color-primary-blue, --color-bg-light, --color-text-dark, ecc.).
+- Definizione dei blocchi tematici in index.css per garantire coerenza cromatica globale.
+- Ottimizzazione del contrasto e della leggibilità (accessibilità) per ogni singola combinazione di colori, con particolare attenzione alle modalità scure e pastello.
+
+3. SINCRONIZZAZIONE DI SISTEMA
+- Implementazione di un hook useEffect in App.tsx per l'aggiornamento dinamico del tag meta "theme-color".
+- Sincronizzazione automatica del colore dell'interfaccia del browser (status bar e address bar) con il tema selezionato nell'app.
+
+4. REVISIONE COMPONENTI UI
+- Aggiornamento di tutti i Modali (Impostazioni, Changelog, Conferma Logout) per il supporto nativo ai temi.
+- Adeguamento dei prompt PWA (Installazione e Ricaricamento) ai nuovi standard cromatici.
+- Tematizzazione dinamica delle categorie dell'Agenda (Compiti, Valutazioni, Colloqui) utilizzando variabili CSS trasparenti.
+- Pulizia di colori residui hardcoded in App.tsx e SettingsModal.tsx.
+
+5. CHANGELOG E VERSIONE
+- Aggiornamento della versione dell'applicazione a 0.6.0.
+- Revisione completa del file changelog.ts con uno stile professionale, diretto e privo di riferimenti in prima persona.
+- Integrazione di icone e colori dinamici all'interno del modale Novità.

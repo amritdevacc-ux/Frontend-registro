@@ -28,7 +28,7 @@ export function ReloadPrompt() {
       >
         <button 
           onClick={() => setNeedRefresh(false)}
-          className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="absolute top-2 right-2 p-1 text-[var(--color-text-gray)] hover:text-[var(--color-text-dark)] transition-colors"
           aria-label="Chiudi"
         >
           <X size={16} />
@@ -43,7 +43,7 @@ export function ReloadPrompt() {
             <h3 className="text-[14px] font-extrabold text-[var(--color-text-dark)] mb-1">
                Aggiornamento App
             </h3>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 font-bold mb-3 leading-snug">
+            <p className="text-[12px] text-[var(--color-text-gray)] font-bold mb-3 leading-snug">
                È disponibile una nuova versione di Klass. Ricarica per applicare i cambiamenti.
             </p>
             <button 

@@ -12,8 +12,6 @@ import {
   Calendar,
   Clock,
   UserX,
-  Moon,
-  Sun,
   Plus,
   Trash2,
   Settings
@@ -64,33 +62,33 @@ const getTheme = (evt: AgendaEvent) => {
   
   if (evt.evtCode === 'AGHW' || notesLower.includes('compit')) {
     return {
-      bgUnder: 'bg-orange-200 dark:bg-orange-900/60',
-      textUnder: 'text-orange-700 dark:text-orange-300',
+      bgUnder: 'bg-orange-400/20',
+      textUnder: 'text-orange-500',
       label: 'Compito',
-      tagBg: 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
+      tagBg: 'bg-orange-500/10 text-orange-500 border-orange-500/20'
     };
   }
   if (notesLower.includes('verifica') || notesLower.includes('scritta') || notesLower.includes('interrogazion')) {
     return {
-      bgUnder: 'bg-red-200 dark:bg-red-900/60',
-      textUnder: 'text-red-700 dark:text-red-300',
+      bgUnder: 'bg-red-400/20',
+      textUnder: 'text-red-500',
       label: 'Valutazione',
-      tagBg: 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
+      tagBg: 'bg-red-500/10 text-red-500 border-red-500/20'
     };
   }
   if (notesLower.includes('colloqui')) {
     return {
-      bgUnder: 'bg-indigo-200 dark:bg-indigo-900/60',
-      textUnder: 'text-indigo-700 dark:text-indigo-300',
+      bgUnder: 'bg-indigo-400/20',
+      textUnder: 'text-indigo-500',
       label: 'Colloquio',
-      tagBg: 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800'
+      tagBg: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
     };
   }
   return {
-    bgUnder: 'bg-blue-200 dark:bg-blue-900/60',
-    textUnder: 'text-blue-700 dark:text-blue-300',
+    bgUnder: 'bg-[var(--color-accent-blue)]/60',
+    textUnder: 'text-[var(--color-primary-blue)]',
     label: 'Annotazione',
-    tagBg: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
+    tagBg: 'bg-[var(--color-accent-blue)]/30 text-[var(--color-primary-blue)] border-[var(--color-accent-blue)]/50'
   };
 };
 
@@ -107,15 +105,15 @@ function AgendaCard({ evt }: { evt: AgendaEvent }) {
 
   return (
     <div className="relative mb-6 cursor-pointer group w-full" onClick={() => setIsExpanded(!isExpanded)}>
-      <div className={`bg-[var(--color-bg-card)] rounded-[2rem] p-6 relative z-10 border border-gray-100 dark:border-gray-800 transition-all duration-300 ${isExpanded ? 'shadow-md -translate-y-1' : 'shadow-sm hover:shadow-md'}`}>
+      <div className={`bg-[var(--color-bg-card)] rounded-[2rem] p-6 relative z-10 border border-[var(--color-bg-light)] transition-all duration-300 ${isExpanded ? 'shadow-md -translate-y-1' : 'shadow-sm hover:shadow-md'}`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center border border-gray-100 dark:border-gray-600">
-              <UserX size={18} className="text-gray-400 dark:text-gray-300" />
+            <div className="w-10 h-10 rounded-full bg-[var(--color-bg-light)] flex items-center justify-center border border-[var(--color-bg-light)]">
+              <UserX size={18} className="text-[var(--color-text-gray)]" />
             </div>
             <div>
               <p className="text-[13px] font-extrabold text-[var(--color-text-dark)] leading-tight">{evt.authorName ? evt.authorName.split(' ').map(n=>n.charAt(0).toUpperCase() + n.slice(1).toLowerCase()).join(' ') : 'Docente'}</p>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{evt.classDesc || 'Generale'}</p>
+              <p className="text-[10px] font-bold text-[var(--color-text-gray)] uppercase tracking-widest mt-0.5">{evt.classDesc || 'Generale'}</p>
             </div>
           </div>
         </div>
@@ -124,7 +122,7 @@ function AgendaCard({ evt }: { evt: AgendaEvent }) {
           {evt.subjectDesc || 'Comunicazione Generale'}
         </h4>
         
-        <p className={`text-[13px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-wrap break-words transition-all duration-300 mb-5 relative ${isExpanded ? '' : 'line-clamp-3'}`}>
+        <p className={`text-[13px] font-medium text-[var(--color-text-gray)] leading-relaxed whitespace-pre-wrap break-words transition-all duration-300 mb-5 relative ${isExpanded ? '' : 'line-clamp-3'}`}>
           {evt.notes}
         </p>
         
@@ -132,11 +130,11 @@ function AgendaCard({ evt }: { evt: AgendaEvent }) {
           <span className={`px-2.5 py-1 rounded-[0.5rem] border text-[10px] font-extrabold uppercase tracking-widest ${theme.tagBg}`}>
             {theme.label}
           </span>
-          <span className="px-2.5 py-1 rounded-[0.5rem] border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-extrabold uppercase tracking-widest bg-gray-50 dark:bg-gray-800">
+          <span className="px-2.5 py-1 rounded-[0.5rem] border border-[var(--color-bg-light)] text-[var(--color-text-gray)] text-[10px] font-extrabold uppercase tracking-widest bg-[var(--color-bg-light)]">
             {timeString}
           </span>
           {isMultiDay && (
-            <span className="px-2.5 py-1 rounded-[0.5rem] border border-blue-200 dark:border-blue-800 text-blue-500 dark:text-blue-400 text-[10px] font-extrabold uppercase tracking-widest bg-blue-50 dark:bg-blue-900/30">
+            <span className="px-2.5 py-1 rounded-[0.5rem] border border-[var(--color-accent-blue)]/50 text-[var(--color-primary-blue)] text-[10px] font-extrabold uppercase tracking-widest bg-[var(--color-accent-blue)]/30">
               Più giorni
             </span>
           )}
@@ -183,11 +181,13 @@ export default function App() {
   const [rememberMe, setRememberMe] = useState(() => {
     return localStorage.getItem('cvv_credentials') !== null;
   });
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('cvv_dark');
-    if (saved) return saved === 'true';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('cvv_theme');
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
+
   useEffect(() => {
     if (activeTab === 'agenda') {
       setTimeout(() => {
@@ -202,13 +202,32 @@ export default function App() {
   }, [activeTab]);
 
   useEffect(() => {
-    if (darkMode) {
+    const darkThemes = ['dark', 'midnight', 'mono', 'sunset', 'elegance'];
+    if (darkThemes.includes(theme)) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('cvv_dark', darkMode.toString());
-  }, [darkMode]);
+    
+    document.documentElement.classList.remove(
+      'theme-midnight', 'theme-dreamland', 'theme-lemonade', 
+      'theme-cozy', 'theme-violet', 'theme-mono', 
+      'theme-sunset', 'theme-elegance'
+    );
+    
+    if (theme !== 'light' && theme !== 'dark') {
+      document.documentElement.classList.add(`theme-${theme}`);
+    }
+    
+    // Dynamically update theme-color meta tag
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) {
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg-light').trim();
+      if (bgColor) themeMeta.setAttribute('content', bgColor);
+    }
+    
+    localStorage.setItem('cvv_theme', theme);
+  }, [theme]);
 
 
   const loadDemoData = () => {
@@ -504,7 +523,7 @@ export default function App() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg-light)] font-inter flex items-center justify-center p-6 selection:bg-blue-100">
+      <div className="min-h-screen bg-[var(--color-bg-light)] font-inter flex items-center justify-center p-6 selection:bg-[var(--color-accent-blue)]/30">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -518,37 +537,37 @@ export default function App() {
               </div>
             </div>
             <h1 className="text-[28px] font-extrabold text-center text-[var(--color-text-dark)] leading-tight mb-2 tracking-tight">Klass</h1>
-            <p className="text-center text-gray-400 font-bold mb-10 text-[13px]">Accedi con le tue credenziali</p>
+            <p className="text-center text-[var(--color-text-gray)] font-bold mb-10 text-[13px]">Accedi con le tue credenziali</p>
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-1.5 ml-2">Codice Scuola (Opzionale)</label>
+                <label className="block text-[11px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-widest mb-1.5 ml-2">Codice Scuola (Opzionale)</label>
                 <input
                   type="text"
                   value={cid}
                   onChange={(e) => setCid(e.target.value)}
-                  className="w-full px-5 py-4 bg-[var(--color-bg-light)] text-[15px] font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-gray-400 placeholder:font-semibold"
+                  className="w-full px-5 py-4 bg-[var(--color-bg-light)] text-[15px] font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-[var(--color-text-gray)] placeholder:font-semibold"
                   placeholder="es. CP12345"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-1.5 ml-2">Codice Utente / Email</label>
+                <label className="block text-[11px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-widest mb-1.5 ml-2">Codice Utente / Email</label>
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-5 py-4 bg-[var(--color-bg-light)] text-[15px] font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-gray-400 placeholder:font-semibold"
+                  className="w-full px-5 py-4 bg-[var(--color-bg-light)] text-[15px] font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-[var(--color-text-gray)] placeholder:font-semibold"
                   placeholder="es. S1234567X"
                   required
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-1.5 ml-2">Password</label>
+                <label className="block text-[11px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-widest mb-1.5 ml-2">Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-5 py-4 bg-[var(--color-bg-light)] text-[15px] font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-gray-400 placeholder:font-semibold"
+                  className="w-full px-5 py-4 bg-[var(--color-bg-light)] text-[15px] font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-[var(--color-text-gray)] placeholder:font-semibold"
                   placeholder="••••••••"
                   required
                 />
@@ -578,9 +597,9 @@ export default function App() {
                   id="rememberMe"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-[var(--color-primary-blue)] bg-[var(--color-bg-light)] border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-accent-blue)]"
+                  className="w-4 h-4 text-[var(--color-primary-blue)] bg-[var(--color-bg-light)] border-[var(--color-text-gray)] rounded focus:ring-2 focus:ring-[var(--color-accent-blue)]"
                 />
-                <label htmlFor="rememberMe" className="ml-2 text-[12px] font-bold text-gray-400 cursor-pointer select-none">
+                <label htmlFor="rememberMe" className="ml-2 text-[12px] font-bold text-[var(--color-text-gray)] cursor-pointer select-none">
                   Ricordami (salva credenziali per accessi futuri)
                 </label>
               </div>
@@ -588,7 +607,7 @@ export default function App() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-[var(--color-primary-blue)] hover:bg-blue-700 text-white font-extrabold text-[16px] rounded-[1.5rem] soft-shadow transition-transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 mt-4"
+                className="w-full py-4 bg-[var(--color-primary-blue)] hover:opacity-90 text-white font-extrabold text-[16px] rounded-[1.5rem] soft-shadow transition-transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 mt-4"
               >
                 {loading ? <Loader2 className="animate-spin" size={20} /> : <LogIn size={20} strokeWidth={2.5} />}
                 {loading ? 'Accesso in corso...' : 'Accedi'}
@@ -596,21 +615,21 @@ export default function App() {
 
               <div className="relative flex items-center py-4">
                 <div className="flex-grow border-t border-[var(--color-bg-light)]"></div>
-                <span className="flex-shrink mx-4 text-gray-300 text-[10px] font-extrabold uppercase tracking-[0.2em]">Oppure</span>
+                <span className="flex-shrink mx-4 text-[var(--color-text-gray)] text-[10px] font-extrabold uppercase tracking-[0.2em]">Oppure</span>
                 <div className="flex-grow border-t border-[var(--color-bg-light)]"></div>
               </div>
 
               <button
                 type="button"
                 onClick={loadDemoData}
-                className="w-full py-4 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.5rem] hover:bg-gray-100 dark:hover:bg-gray-800 transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.5rem] hover:opacity-80 transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 Prova la Demo
               </button>
             </form>
           </div>
           <div className="bg-[var(--color-bg-light)] p-5 text-center">
-            <p className="text-[11px] font-bold text-gray-400">Questa app non è affiliata a Spaggiari</p>
+            <p className="text-[11px] font-bold text-[var(--color-text-gray)]">Questa app non è affiliata a Spaggiari</p>
           </div>
         </motion.div>
         <PWAInstallPrompt />
@@ -620,7 +639,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-light)] pb-28 relative font-inter selection:bg-blue-100">
+    <div className="min-h-screen bg-[var(--color-bg-light)] pb-28 relative font-inter selection:bg-[var(--color-accent-blue)]/30">
       {/* Pull-to-refresh indicator */}
       <div
         className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none"
@@ -646,10 +665,10 @@ export default function App() {
       <header className="px-8 pt-16 pb-6 flex items-start justify-between">
         <div>
           <h2 className="text-[32px] font-extrabold text-[var(--color-text-dark)] leading-tight tracking-tight">Ciao {user.firstName},</h2>
-          <p className="text-sm font-semibold text-gray-400 mt-1 tracking-wide">Ecco il tuo {activeTab === 'lessons' ? 'orario settimanale' : activeTab === 'grades' ? 'riepilogo' : activeTab === 'agenda' ? 'registro agenda' : 'registro presenze'}</p>
+          <p className="text-sm font-semibold text-[var(--color-text-gray)] mt-1 tracking-wide">Ecco il tuo {activeTab === 'lessons' ? 'orario settimanale' : activeTab === 'grades' ? 'riepilogo' : activeTab === 'agenda' ? 'registro agenda' : 'registro presenze'}</p>
         </div>
         <div className="text-right flex items-center justify-end gap-3">
-          <p className="text-[13px] font-bold text-[#3551E5] whitespace-nowrap">{new Date().toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+          <p className="text-[13px] font-bold text-[var(--color-primary-blue)] whitespace-nowrap">{new Date().toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
         </div>
       </header>
 
@@ -669,21 +688,21 @@ export default function App() {
                   <Calculator size={18} strokeWidth={2.5} />
                 </div>
                 <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{totalAverage.toFixed(2)}</span>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Media</span>
+                <span className="text-[10px] text-[var(--color-text-gray)] font-bold uppercase tracking-widest">Media</span>
               </div>
               <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
                 <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
                   <Clock size={18} strokeWidth={2.5} />
                 </div>
                 <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{lessons.length}</span>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Lezioni</span>
+                <span className="text-[10px] text-[var(--color-text-gray)] font-bold uppercase tracking-widest">Lezioni</span>
               </div>
               <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow flex flex-col items-center text-center">
                 <div className="w-10 h-10 bg-[var(--color-accent-blue)] text-[var(--color-primary-blue)] rounded-2xl flex items-center justify-center mb-3">
                   <UserX size={18} strokeWidth={2.5} />
                 </div>
                 <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{absences.length}</span>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Assenze</span>
+                <span className="text-[10px] text-[var(--color-text-gray)] font-bold uppercase tracking-widest">Assenze</span>
               </div>
             </motion.div>
           )}
@@ -709,7 +728,7 @@ export default function App() {
                     return compareDate >= s && compareDate <= en;
                   }).length}
                 </span>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Eventi in questa data</span>
+                <span className="text-[10px] text-[var(--color-text-gray)] font-bold uppercase tracking-widest">Eventi in questa data</span>
               </div>
             </motion.div>
           )}
@@ -727,7 +746,7 @@ export default function App() {
                   <Clock size={18} strokeWidth={2.5} />
                 </div>
                 <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{lessons.length}</span>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Lezioni di oggi</span>
+                <span className="text-[10px] text-[var(--color-text-gray)] font-bold uppercase tracking-widest">Lezioni di oggi</span>
               </div>
             </motion.div>
           )}
@@ -745,7 +764,7 @@ export default function App() {
                   <UserX size={18} strokeWidth={2.5} />
                 </div>
                 <span className="text-2xl font-extrabold text-[var(--color-text-dark)] leading-none mb-1">{absences.length}</span>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Assenze totali</span>
+                <span className="text-[10px] text-[var(--color-text-gray)] font-bold uppercase tracking-widest">Assenze totali</span>
               </div>
             </motion.div>
           )}
@@ -763,7 +782,7 @@ export default function App() {
                     className={`flex-1 py-3 px-4 rounded-[1.5rem] text-[11px] font-extrabold uppercase tracking-widest transition-all ${
                       selectedPeriod === period.periodPos
                         ? 'bg-[var(--color-primary-blue)] text-white soft-shadow'
-                        : 'text-gray-400 hover:text-gray-700'
+                        : 'text-[var(--color-text-gray)] hover:text-[var(--color-text-dark)]'
                     }`}
                   >
                     {period.periodDesc}
@@ -793,17 +812,17 @@ export default function App() {
             )}
 
             <div className="flex items-center justify-between mb-4">
-               <h3 className="text-[11px] font-extrabold text-gray-400 uppercase tracking-[0.2em] ml-2">Materie</h3>
+               <h3 className="text-[11px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-[0.2em] ml-2">Materie</h3>
             </div>
             
             <div className="space-y-4">
               {loading && grades.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                <div className="flex flex-col items-center justify-center py-12 text-[var(--color-text-gray)]">
                   <Loader2 className="animate-spin mb-2" size={32} />
                   <p className="font-bold text-sm">Caricamento...</p>
                 </div>
               ) : subjectAverages.length === 0 ? (
-                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-gray-400 font-bold">
+                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-[var(--color-text-gray)] font-bold">
                   Nessun voto registrato in questo periodo.
                 </div>
               ) : subjectAverages.map((subject, idx) => {
@@ -828,7 +847,7 @@ export default function App() {
                         <h4 className={`font-extrabold text-[16px] text-[var(--color-text-dark)] leading-tight mb-1 ${selectedSubject === subject.subject ? '' : 'line-clamp-3'}`} title={subject.subject}>
                           {selectedSubject === subject.subject ? subject.subject : getSubjectDisplayName(subject.subject)}
                         </h4>
-                        <p className="text-[12px] font-bold text-gray-400">{subject.grades.length} voti registrati</p>
+                        <p className="text-[12px] font-bold text-[var(--color-text-gray)]">{subject.grades.length} voti registrati</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
@@ -869,12 +888,12 @@ export default function App() {
                               setGradeModalSubject(subject.subject);
                               setGradeModalValue('');
                             }}
-                            className="w-full py-3 bg-[var(--color-bg-card)] text-[var(--color-primary-blue)] font-extrabold text-[13px] rounded-[1.5rem] card-shadow flex items-center justify-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border border-blue-100 dark:border-blue-800"
+                            className="w-full py-3 bg-[var(--color-bg-card)] text-[var(--color-primary-blue)] font-extrabold text-[13px] rounded-[1.5rem] card-shadow flex items-center justify-center gap-2 hover:opacity-80 transition-colors border border-[var(--color-bg-light)]"
                           >
                             <Plus size={16} strokeWidth={3} /> Aggiungi voto manuale
                           </button>
                           {subject.grades.map((grade, gIdx) => (
-                            <div key={gIdx} className={`flex flex-col gap-3 p-4 rounded-[1.5rem] card-shadow relative ${grade.isCustom ? 'bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800' : 'bg-[var(--color-bg-card)]'}`}>
+                            <div key={gIdx} className={`flex flex-col gap-3 p-4 rounded-[1.5rem] card-shadow relative ${grade.isCustom ? 'bg-[var(--color-accent-blue)]/20 border border-[var(--color-accent-blue)]/40' : 'bg-[var(--color-bg-card)]'}`}>
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                   <div className={`w-12 h-12 rounded-[1rem] flex items-center justify-center font-extrabold text-[18px] ${
@@ -884,8 +903,8 @@ export default function App() {
                                   </div>
                                   <div>
                                     <p className="text-[14px] font-extrabold text-[var(--color-text-dark)] mb-0.5">{grade.componentDesc || 'Voto'}</p>
-                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400">
-                                      <Calendar size={12} className="text-gray-300" />
+                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--color-text-gray)]">
+                                      <Calendar size={12} className="text-[var(--color-text-gray)]" />
                                       <span>{new Date(grade.evtDate).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}</span>
                                     </div>
                                   </div>
@@ -907,7 +926,7 @@ export default function App() {
                                 )}
                               </div>
                               {grade.notesForFamily && (
-                                <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-[1rem] text-[12px] font-semibold text-gray-500 dark:text-gray-400 leading-relaxed">
+                                <div className="bg-[var(--color-bg-light)] p-3 rounded-[1rem] text-[12px] font-semibold text-[var(--color-text-gray)] leading-relaxed">
                                   {grade.notesForFamily}
                                 </div>
                               )}
@@ -926,10 +945,10 @@ export default function App() {
 
         {activeTab === 'agenda' && (
           <div className="space-y-4">
-            <h3 className="text-[11px] font-extrabold text-gray-400 uppercase tracking-[0.2em] ml-2">Agenda</h3>
+            <h3 className="text-[11px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-[0.2em] ml-2">Agenda</h3>
             <div className="bg-[var(--color-bg-card)] p-5 rounded-[2rem] card-shadow mb-6">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-[12px] font-extrabold text-gray-400 uppercase tracking-widest">{selectedAgendaDate.getFullYear()}</span>
+                <span className="text-[12px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-widest">{selectedAgendaDate.getFullYear()}</span>
                 <span className="text-[18px] font-extrabold text-[var(--color-primary-blue)] tracking-tight capitalize">
                   {selectedAgendaDate.toLocaleString('it-IT', { month: 'long' })}
                 </span>
@@ -952,13 +971,13 @@ export default function App() {
                          e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                        }}
                        className={`relative flex-shrink-0 w-12 h-16 rounded-2xl flex flex-col items-center justify-center transition-all snap-center ${
-                         isSelected ? 'text-[var(--color-primary-blue)] scale-105' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:scale-105'
+                         isSelected ? 'text-[var(--color-primary-blue)] scale-105' : 'text-[var(--color-text-gray)] hover:text-[var(--color-text-dark)] hover:scale-105'
                        }`}
                      >
                        {isSelected && (
                          <motion.div 
                            layoutId="agenda-date-bubble"
-                           className="absolute inset-0 bg-blue-50 dark:bg-blue-900/40 rounded-2xl border border-blue-100 dark:border-blue-800 soft-shadow"
+                           className="absolute inset-0 bg-[var(--color-accent-blue)]/40 rounded-2xl border border-[var(--color-accent-blue)]/50 soft-shadow"
                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
                            style={{ zIndex: 0 }}
                          />
@@ -973,7 +992,7 @@ export default function App() {
 
             <div className="space-y-4">
               {agendaLoading && agendaEvents.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                <div className="flex flex-col items-center justify-center py-12 text-[var(--color-text-gray)]">
                   <Loader2 className="animate-spin mb-2" size={32} />
                   <p className="font-bold text-sm">Caricamento agenda...</p>
                 </div>
@@ -986,7 +1005,7 @@ export default function App() {
                 const en = new Date(edEnd); en.setHours(0,0,0,0);
                 return compareDate >= s && compareDate <= en;
               }).length === 0 ? (
-                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-gray-400 font-bold">
+                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-[var(--color-text-gray)] font-bold">
                   Nessun evento in agenda per questa data.
                 </div>
               ) : agendaEvents
@@ -1016,10 +1035,10 @@ export default function App() {
 
         {activeTab === 'lessons' && (
           <div className="space-y-4">
-            <h3 className="text-[11px] font-extrabold text-gray-400 uppercase tracking-[0.2em] ml-2">Lezioni di Oggi ({lessons.length})</h3>
+            <h3 className="text-[11px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-[0.2em] ml-2">Lezioni di Oggi ({lessons.length})</h3>
             <div className="space-y-4">
               {lessons.length === 0 ? (
-                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-gray-400">
+                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-[var(--color-text-gray)]">
                   Nessuna lezione registrata per oggi.
                 </div>
               ) : lessons.map((lesson, idx) => (
@@ -1033,16 +1052,16 @@ export default function App() {
                   <div className="flex gap-4 items-center w-full">
                     <div className="text-center w-14 shrink-0">
                        <p className="text-[15px] font-extrabold text-[var(--color-text-dark)] leading-none mb-1">08:00</p>
-                       <p className="text-[10px] font-bold text-gray-400 uppercase">AM</p>
+                       <p className="text-[10px] font-bold text-[var(--color-text-gray)] uppercase">AM</p>
                     </div>
                     <div className="w-[2px] h-10 bg-[var(--color-bg-light)] rounded-full shrink-0"></div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-extrabold text-[15px] text-[var(--color-text-dark)] leading-tight mb-1 truncate">{lesson.subjectDesc}</h4>
-                      <div className="text-[12px] font-bold text-gray-400 flex items-center gap-1.5 truncate">
+                      <div className="text-[12px] font-bold text-[var(--color-text-gray)] flex items-center gap-1.5 truncate">
                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block shrink-0"></span> {lesson.lessonType || 'Standard'}
                       </div>
-                      <div className="text-[12px] font-bold text-gray-400 mt-1 flex items-center gap-1.5 truncate">
-                        <UserX size={12} className="shrink-0 text-gray-300" /> {lesson.teacherDesc}
+                      <div className="text-[12px] font-bold text-[var(--color-text-gray)] mt-1 flex items-center gap-1.5 truncate">
+                        <UserX size={12} className="shrink-0 text-[var(--color-text-gray)]" /> {lesson.teacherDesc}
                       </div>
                     </div>
                   </div>
@@ -1054,10 +1073,10 @@ export default function App() {
 
         {activeTab === 'absences' && (
           <div className="space-y-4">
-            <h3 className="text-[11px] font-extrabold text-gray-400 uppercase tracking-[0.2em] ml-2">Assenze e Ritardi ({absences.length})</h3>
+            <h3 className="text-[11px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-[0.2em] ml-2">Assenze e Ritardi ({absences.length})</h3>
             <div className="space-y-4">
               {absences.length === 0 ? (
-                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-gray-400 font-bold">
+                <div className="bg-[var(--color-bg-card)] p-8 rounded-[2rem] card-shadow text-center text-[var(--color-text-gray)] font-bold">
                   Nessuna assenza registrata.
                 </div>
               ) : absences.map((absence, idx) => (
@@ -1070,8 +1089,8 @@ export default function App() {
                 >
                   <div className="flex-1 min-w-0 pr-4">
                     <h4 className="font-extrabold text-[15px] text-[var(--color-text-dark)] leading-tight mb-1 truncate">{absence.evtDesc}</h4>
-                    <p className="text-[12px] font-bold text-gray-400 flex items-center gap-1.5">
-                      <Calendar size={12} className="text-gray-300" />
+                    <p className="text-[12px] font-bold text-[var(--color-text-gray)] flex items-center gap-1.5">
+                      <Calendar size={12} className="text-[var(--color-text-gray)]" />
                       {new Date(absence.evtDate).toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}
                     </p>
                   </div>
@@ -1093,33 +1112,33 @@ export default function App() {
           onClick={() => setActiveTab('grades')}
           className="relative p-2 transition-transform active:scale-95"
         >
-          <TrendingUp size={26} className={activeTab === 'grades' ? 'text-[var(--color-primary-blue)]' : 'text-gray-300'} strokeWidth={activeTab === 'grades' ? 2.5 : 2} />
+          <TrendingUp size={26} className={activeTab === 'grades' ? 'text-[var(--color-primary-blue)]' : 'text-[var(--color-text-gray)]'} strokeWidth={activeTab === 'grades' ? 2.5 : 2} />
           {activeTab === 'grades' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
         </button>
         <button 
           onClick={() => setActiveTab('agenda')}
           className="relative p-2 transition-transform active:scale-95"
         >
-          <BookOpen size={26} className={activeTab === 'agenda' ? 'text-[var(--color-primary-blue)]' : 'text-gray-300'} strokeWidth={activeTab === 'agenda' ? 2.5 : 2} />
+          <BookOpen size={26} className={activeTab === 'agenda' ? 'text-[var(--color-primary-blue)]' : 'text-[var(--color-text-gray)]'} strokeWidth={activeTab === 'agenda' ? 2.5 : 2} />
           {activeTab === 'agenda' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
         </button>
         <button 
           onClick={() => setActiveTab('lessons')}
           className="relative p-2 transition-transform active:scale-95"
         >
-          <Calendar size={26} className={activeTab === 'lessons' ? 'text-[var(--color-primary-blue)]' : 'text-gray-300'} strokeWidth={activeTab === 'lessons' ? 2.5 : 2} />
+          <Calendar size={26} className={activeTab === 'lessons' ? 'text-[var(--color-primary-blue)]' : 'text-[var(--color-text-gray)]'} strokeWidth={activeTab === 'lessons' ? 2.5 : 2} />
           {activeTab === 'lessons' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
         </button>
         <button 
           onClick={() => setActiveTab('absences')}
           className="relative p-2 transition-transform active:scale-95"
         >
-          <UserX size={26} className={activeTab === 'absences' ? 'text-[var(--color-primary-blue)]' : 'text-gray-300'} strokeWidth={activeTab === 'absences' ? 2.5 : 2} />
+          <UserX size={26} className={activeTab === 'absences' ? 'text-[var(--color-primary-blue)]' : 'text-[var(--color-text-gray)]'} strokeWidth={activeTab === 'absences' ? 2.5 : 2} />
           {activeTab === 'absences' && <motion.div layoutId="nav-dot" className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--color-primary-blue)] rounded-full"></motion.div>}
         </button>
         <button 
           onClick={() => setShowSettings(true)}
-          className="relative p-2 text-gray-300 hover:text-[var(--color-text-dark)] transition-transform active:scale-95"
+          className="relative p-2 text-[var(--color-text-gray)] hover:text-[var(--color-text-dark)] transition-transform active:scale-95"
         >
           <Settings size={26} strokeWidth={2} />
         </button>
@@ -1133,7 +1152,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-sm bg-[var(--color-bg-card)] rounded-[2rem] p-6 shadow-2xl dark:border dark:border-gray-800"
+              className="w-full max-w-sm bg-[var(--color-bg-card)] rounded-[2rem] p-6 shadow-2xl border border-[var(--color-bg-light)]"
             >
               <div className="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-[1.2rem] flex items-center justify-center mb-4 mx-auto">
                 <LogOut size={28} strokeWidth={2.5} />
@@ -1141,19 +1160,19 @@ export default function App() {
               <h3 className="text-[20px] font-extrabold text-center text-[var(--color-text-dark)] mb-2">
                 Vuoi uscire?
               </h3>
-              <p className="text-[14px] text-center text-gray-500 dark:text-gray-400 font-bold mb-6 leading-relaxed">
+              <p className="text-[14px] text-center text-[var(--color-text-gray)] font-bold mb-6 leading-relaxed">
                 Dovrai inserire nuovamente le tue credenziali per accedere ai tuoi dati.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 py-3.5 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.2rem] hover:bg-gray-100 dark:hover:bg-gray-800 transition-transform active:scale-[0.98]"
+                  className="flex-1 py-3.5 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.2rem] hover:opacity-80 transition-transform active:scale-[0.98]"
                 >
                   Annulla
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-red-500/30"
+                  className="flex-1 py-3.5 bg-red-600 dark:bg-red-500 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-red-600/20"
                 >
                   Esci
                 </button>
@@ -1173,7 +1192,7 @@ export default function App() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm bg-[var(--color-bg-card)] rounded-[2rem] p-6 shadow-2xl dark:border dark:border-gray-800"
+              className="w-full max-w-sm bg-[var(--color-bg-card)] rounded-[2rem] p-6 shadow-2xl border border-[var(--color-bg-light)]"
             >
               <h3 className="text-[18px] font-extrabold text-center text-[var(--color-text-dark)] mb-6">
                 Aggiungi voto a {gradeModalSubject}
@@ -1183,14 +1202,14 @@ export default function App() {
                 step="0.25"
                 value={gradeModalValue}
                 onChange={(e) => setGradeModalValue(e.target.value.replace(',', '.'))}
-                className="w-full px-5 py-4 mb-6 bg-[var(--color-bg-light)] text-[24px] text-center font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-gray-400"
+                className="w-full px-5 py-4 mb-6 bg-[var(--color-bg-light)] text-[24px] text-center font-bold text-[var(--color-text-dark)] border-0 rounded-[1.5rem] focus:ring-4 focus:ring-[var(--color-accent-blue)] focus:outline-none transition-all placeholder:text-[var(--color-text-gray)]"
                 placeholder="es. 7.5"
                 autoFocus
               />
               <div className="flex gap-3">
                 <button
                   onClick={() => setGradeModalSubject(null)}
-                  className="flex-1 py-3.5 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.2rem] hover:bg-gray-100 dark:hover:bg-gray-800 transition-transform active:scale-[0.98]"
+                  className="flex-1 py-3.5 bg-[var(--color-bg-light)] text-[var(--color-text-dark)] font-extrabold text-[15px] rounded-[1.2rem] hover:opacity-80 transition-transform active:scale-[0.98]"
                 >
                   Annulla
                 </button>
@@ -1224,7 +1243,7 @@ export default function App() {
                     });
                     setGradeModalSubject(null);
                   }}
-                  className="flex-1 py-3.5 bg-[var(--color-primary-blue)] hover:bg-blue-700 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-blue-500/30"
+                  className="flex-1 py-3.5 bg-[var(--color-primary-blue)] hover:opacity-90 text-white font-extrabold text-[15px] rounded-[1.2rem] transition-transform active:scale-[0.98] shadow-lg shadow-[var(--color-primary-blue)]/30"
                 >
                   Aggiungi
                 </button>
@@ -1237,8 +1256,8 @@ export default function App() {
       <SettingsModal 
         isOpen={showSettings} 
         onClose={() => setShowSettings(false)} 
-        darkMode={darkMode} 
-        setDarkMode={setDarkMode} 
+        theme={theme} 
+        setTheme={setTheme} 
         onLogoutClick={() => setShowLogoutConfirm(true)} 
       />
 

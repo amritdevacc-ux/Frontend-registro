@@ -1,4 +1,4 @@
-import { Sparkles, Moon, Calculator, UserCheck, Settings, BookOpen, Clock } from 'lucide-react';
+import { Sparkles, Calculator, UserCheck, Settings, BookOpen, Clock, Palette, Zap, Smartphone } from 'lucide-react';
 
 export interface Feature {
   id: string;
@@ -17,58 +17,58 @@ export interface ChangelogVersion {
 
 export const changelog: ChangelogVersion[] = [
   {
-    version: __APP_VERSION__,
-    date: '2026-03-27',
-    title: 'Aggiornamento',
+    version: '0.6.0',
+    date: '2026-03-29',
+    title: 'Personalizzazione e Stile',
     features: [
       {
-        id: 'dark-mode',
-        title: 'Finalmente il Tema Scuro',
-        description: 'Si attiva da solo o lo decidi tu dalle impostazioni.',
-        icon: Moon,
-        color: 'bg-indigo-500'
+        id: 'new-themes',
+        title: 'Varianti Cromatiche',
+        description: 'Selezione tra 10 nuove palette (Midnight, Dreamland, Sunset e altre) per un\'esperienza d\'uso su misura.',
+        icon: Palette,
+        color: 'bg-[var(--color-primary-blue)]'
       },
       {
-        id: 'grade-calculator',
-        title: 'Calcolatore della Sufficienza',
-        description: 'Sotto ogni materia ora vedi subito che voto ti serve per arrivare al 6. Oppure il voto che devi prendere per tenere la materia sufficiente.',
-        icon: Calculator,
-        color: 'bg-emerald-500'
-      },
-      {
-        id: 'grade-simulation',
-        title: 'Voti manuali',
-        description: 'Puoi aggiungere voti in maniera autonoma per vedere come cambierebbe la tua media.',
+        id: 'dynamic-ui',
+        title: 'Interfaccia Coerente',
+        description: 'Popup, dialoghi e componenti di sistema ora riflettono istantaneamente i colori del tema selezionato.',
         icon: Sparkles,
         color: 'bg-amber-500'
       },
       {
-        id: 'auto-login',
-        title: 'Dimenticati della Password',
-        description: 'Spunta "Ricordami" al login e Klass farà tutto il lavoro per te.',
-        icon: UserCheck,
+        id: 'system-sync',
+        title: 'Integrazione di Sistema',
+        description: 'Sincronizzazione automatica tra i colori dell\'app e la barra del browser per una navigazione fluida.',
+        icon: Smartphone,
+        color: 'bg-emerald-500'
+      },
+      {
+        id: 'performance',
+        title: 'Ottimizzazioni Interne',
+        description: 'Miglioramento della reattività generale e della velocità di transizione tra le diverse sezioni del registro.',
+        icon: Zap,
+        color: 'bg-indigo-500'
+      }
+    ]
+  },
+  {
+    version: '0.5.0',
+    date: '2026-03-20',
+    title: 'Funzioni Registro',
+    features: [
+      {
+        id: 'grade-calculator',
+        title: 'Calcolatore Sufficienza',
+        description: 'Analisi immediata del voto necessario per raggiungere o mantenere la sufficienza in ogni materia.',
+        icon: Calculator,
         color: 'bg-blue-500'
       },
       {
-        id: 'agenda',
-        title: 'Tutto in Agenda',
-        description: 'Compiti, verifiche e note del registro sono tutti a portata di mano in un calendario semplice e pulito.',
+        id: 'agenda-smart',
+        title: 'Agenda Ottimizzata',
+        description: 'Visualizzazione rapida di compiti, verifiche e note in un formato calendario intuitivo.',
         icon: BookOpen,
         color: 'bg-purple-500'
-      },
-      {
-        id: 'lessons',
-        title: 'Le Lezioni di Oggi',
-        description: 'Controlla le lezioni di oggi.',
-        icon: Clock,
-        color: 'bg-orange-500'
-      },
-      {
-        id: 'settings',
-        title: 'Nuove Impostazioni',
-        description: 'Disponibile una sezione dedicata per gestire il tema scuro, vedere la versione dell\'app o uscire dall\'account.',
-        icon: Settings,
-        color: 'bg-gray-500'
       }
     ]
   }

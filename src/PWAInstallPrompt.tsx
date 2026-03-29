@@ -87,7 +87,7 @@ export function PWAInstallPrompt() {
         >
           <button 
             onClick={handleDismiss}
-            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="absolute top-2 right-2 p-1 text-[var(--color-text-gray)] hover:text-[var(--color-text-dark)]"
           >
             <X size={16} />
           </button>
@@ -103,12 +103,12 @@ export function PWAInstallPrompt() {
               </h3>
               
               {isIOS ? (
-                <p className="text-[12px] text-gray-500 dark:text-gray-400 font-bold mb-1 leading-snug">
+                <p className="text-[12px] text-[var(--color-text-gray)] font-bold mb-1 leading-snug">
                   Per installare l'app, tocca l'icona <Share size={12} className="inline mx-0.5" /> e seleziona <br/><strong>Aggiungi alla schermata Home</strong>.
                 </p>
               ) : (
                 <>
-                  <p className="text-[12px] text-gray-500 dark:text-gray-400 font-bold mb-3 leading-snug">
+                  <p className="text-[12px] text-[var(--color-text-gray)] font-bold mb-3 leading-snug">
                     Installa Klass per un'esperienza nativa e accesso offline.
                   </p>
                   {deferredPrompt && (
