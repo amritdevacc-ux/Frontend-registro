@@ -154,6 +154,8 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [rawError, setRawError] = useState<string | null>(null);
   const [user, setUser] = useState<LoginResponse | null>(null);
+  // Evita il flash della schermata di login durante l'auto-login all'avvio
+  const [isInitializing, setIsInitializing] = useState(true);
   // Inizializza con i dati in cache per mostrarli subito (stale-while-revalidate)
   const [grades, setGrades] = useState<Grade[]>(() => loadCache<Grade[]>(CACHE_KEYS.grades) ?? []);
   const [customGrades, setCustomGrades] = useState<Grade[]>(() => loadCache<Grade[]>(CACHE_KEYS.customGrades) ?? []);
@@ -317,7 +319,7 @@ export default function App() {
       }
     };
     
-    checkAuth();
+    checkAuth().finally(() => setIsInitializing(false));
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -491,6 +493,14 @@ export default function App() {
     if (averages.length === 0) return 0;
     return averages.reduce((acc, val) => acc + val, 0) / averages.length;
   }, [subjectAverages]);
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-[var(--color-bg-light)] flex items-center justify-center">
+        <Loader2 className="animate-spin text-[var(--color-primary-blue)]" size={36} />
+      </div>
+    );
+  }
 
   if (!user) {
     return (
