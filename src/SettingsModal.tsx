@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LogOut, Palette, X, Info, Heart, Check } from 'lucide-react';
+import { APP_VERSION } from './changelog';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -89,7 +90,7 @@ export function SettingsModal({ isOpen, onClose, theme, setTheme, onLogoutClick 
                   <Info size={20} className="text-[var(--color-text-gray)]" />
                   <span className="font-extrabold text-[15px]">Versione App</span>
                 </div>
-                <span className="text-[13px] font-bold text-[var(--color-text-gray)]">v{__APP_VERSION__}</span>
+                <span className="text-[13px] font-bold text-[var(--color-text-gray)]">v{APP_VERSION}</span>
               </div>
 
               {/* Logout Button */}

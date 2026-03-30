@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ArrowRight, Star } from 'lucide-react';
-import { changelog, LATEST_VERSION } from './changelog';
+import { APP_VERSION, CHANGELOG_TITLE, CHANGELOG_FEATURES } from './changelog';
 
 const STORAGE_KEY = 'cvv_last_version_seen';
 
@@ -9,11 +9,8 @@ export function ChangelogModal() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Check if the user has seen the latest version
     const lastSeen = localStorage.getItem(STORAGE_KEY);
-    if (lastSeen !== LATEST_VERSION) {
-      // Small delay to allow main app to render and login first if needed
-      // Actually, since we check this on mount, we might want to ensure it shows up smoothly
+    if (lastSeen !== APP_VERSION) {
       const timer = setTimeout(() => {
         setIsOpen(true);
       }, 500);
@@ -23,10 +20,8 @@ export function ChangelogModal() {
 
   const handleClose = () => {
     setIsOpen(false);
-    localStorage.setItem(STORAGE_KEY, LATEST_VERSION);
+    localStorage.setItem(STORAGE_KEY, APP_VERSION);
   };
-
-  const currentVersionData = changelog.find(v => v.version === LATEST_VERSION) || changelog[0];
 
   return (
     <AnimatePresence>
@@ -67,15 +62,15 @@ export function ChangelogModal() {
               </div>
               <h2 className="text-[26px] font-extrabold text-[var(--color-text-dark)] leading-tight mb-2 tracking-tight">Novità di Klass</h2>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--color-bg-light)] rounded-full text-[12px] font-extrabold text-[var(--color-text-gray)] uppercase tracking-widest">
-                <span>Versione {currentVersionData.version}</span>
+                <span>Versione {APP_VERSION}</span>
                 <span className="w-1 h-1 rounded-full bg-[var(--color-text-gray)]/30"></span>
-                <span>{currentVersionData.title}</span>
+                <span>{CHANGELOG_TITLE}</span>
               </div>
             </div>
 
             {/* Scrollable Features List */}
             <div className="overflow-y-auto p-4 sm:p-6 space-y-3 custom-scrollbar">
-              {currentVersionData.features.map((feature, idx) => {
+              {CHANGELOG_FEATURES.map((feature, idx) => {
                 const Icon = feature.icon;
                 return (
                   <motion.div
